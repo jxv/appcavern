@@ -1,0 +1,9 @@
+resolver: lts-9.14
+packages:
+- .
+extra-deps:
+- fluid-idl-0.0.5
+- yesod-auth-oauth2-0.3.0
+- load-env-0.1.1
+flags: {}
+extra-package-dbs: []

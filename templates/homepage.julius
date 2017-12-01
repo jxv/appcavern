@@ -1,0 +1,26 @@
+document.getElementById(#{toJSON aDomId}).innerHTML = "This text was added by the Javascript part of the homepage widget.";
+
+$(function() {
+  $("##{rawJS jsFormId}").submit(function(event) {
+    event.preventDefault();
+
+    $.ajax({
+      url: '@{ApiR}',
+      type: 'POST',
+      contentType: "application/json",
+      data: JSON.stringify({
+        fluid: {major: 0, minor: 0},
+        version: #{toJSON V0.api'version},
+        meta: null,
+        query: #{Null},
+      }),
+      success: function (data) {
+        console.log(data);
+      },
+      error: function (data) {
+        console.log("Error creating comment: " + data);
+      },
+    });
+
+  });
+});

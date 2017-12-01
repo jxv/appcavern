@@ -1,0 +1,33 @@
+{
+  "fluid": {
+    "major": 0,
+    "minor": 0
+  },
+  "pull": {
+    "protocol": "http",
+    "name": "Api",
+    "host": "127.0.0.1",
+    "meta": "Unit",
+    "path": "/api",
+    "port": 8080,
+    "error": "Unit"
+  },
+  "schema": {
+    "Hello": {
+      "m": [
+        {
+          "target": "String"
+        }
+      ],
+      "o": "String"
+    },
+    "AddComment": {
+      "m": [
+        {
+          "message": "String"
+        }
+      ],
+      "o": "Unit"
+    }
+  }
+}
