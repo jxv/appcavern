@@ -1,3 +1,2 @@
 install:
-	# stack build --copy-bins
-	stack build --install-ghc
+	stack build --install-ghc --copy-bins

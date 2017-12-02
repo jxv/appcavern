@@ -13,52 +13,30 @@
     "error": "Unit"
   },
   "schema": {
-    "Hello": {
-      "m": [
-        {
-          "target": "String"
-        }
-      ],
-      "o": "String"
-    },
-    "AddComment": {
-      "m": [
-        {
-          "message": "String"
-        }
-      ],
-      "o": "Unit"
-    },
+    "Url": "String",
+    "UserId": "String",
+    "AppId": "String",
     "Device": [
       "Gcw0"
     ],
-    "UserId": "String",
-    "User": {
-      "m": [
-        {
-          "name": "String"
-        },
-        {
-          "github": {
-            "n": "Option",
-            "p": "Url"
+    "AuthorSpec": [
+      {
+        "tag": "Name",
+        "m": [
+          {
+            "name": "String"
           }
-        }
-      ]
-    },
-    "Date": {
-      "m": [
-        {
-          "year": "Int"
-        },
-        {
-          "month": "Int"
-        },
-        {
-          "day": "Int"
-        }
-      ]
-    },
+        ]
+      },
+      {
+        "tag": "User",
+        "m": [
+          {
+            "user": "UserId"
+          }
+        ]
+      }
+    ],
     "Author": [
       {
         "tag": "Name",
@@ -72,16 +50,40 @@
         "tag": "User",
         "m": [
           {
-            "ident": "UserId"
-          },
-          {
             "user": "User"
           }
         ]
       }
     ],
-    "Url": "String",
-    "AppId": "String",
+    "Date": {
+      "m": [
+        {
+          "year": "Int"
+        },
+        {
+          "month": "Int"
+        },
+        {
+          "day": "Int"
+        }
+      ]
+    },
+    "User": {
+      "m": [
+        {
+          "id": "UserId"
+        },
+        {
+          "name": "String"
+        },
+        {
+          "github": {
+            "n": "Option",
+            "p": "Url"
+          }
+        }
+      ]
+    },
     "AppSpec": {
       "m": [
         {
@@ -99,13 +101,13 @@
         {
           "authors": {
             "n": "List",
-            "p": "Author"
+            "p": "AuthorSpec"
           }
         },
         {
           "porters": {
             "n": "List",
-            "p": "Author"
+            "p": "AuthorSpec"
           }
         },
         {
@@ -167,6 +169,22 @@
           "link": "Url"
         }
       ]
+    },
+    "Hello": {
+      "m": [
+        {
+          "target": "String"
+        }
+      ],
+      "o": "String"
+    },
+    "AddComment": {
+      "m": [
+        {
+          "message": "String"
+        }
+      ],
+      "o": "Unit"
     },
     "AddApp": {
       "m": [

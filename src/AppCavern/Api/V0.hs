@@ -20,18 +20,21 @@ module AppCavern.Api.V0
   , api'spec
   , Api'Thrower(..)
   , Api'Service(..)
-  , UserId(..)
   , Url(..)
+  , UserId(..)
   , AppId(..)
-  , Hello(..)
-  , AddComment(..)
-  , User(..)
   , Date(..)
+  , User(..)
   , AppSpec(..)
   , App(..)
+  , Hello(..)
+  , AddComment(..)
   , AddApp(..)
   , GetApps(..)
   , Device(..)
+  , AuthorSpec(..)
+  , AuthorSpec'Name'Members(..)
+  , AuthorSpec'User'Members(..)
   , Author(..)
   , Author'Name'Members(..)
   , Author'User'Members(..)
@@ -86,33 +89,17 @@ instance Api'Service meta m => Api'Service meta (M.ExceptT C.Response m) where
 -- Types
 --------------------------------------------------------
 
--- Wrap: UserId
-newtype UserId = UserId R.Text
-  deriving (P.Eq, P.Ord, P.IsString, R.ToText,  P.Show)
-
 -- Wrap: Url
 newtype Url = Url R.Text
+  deriving (P.Eq, P.Ord, P.IsString, R.ToText,  P.Show)
+
+-- Wrap: UserId
+newtype UserId = UserId R.Text
   deriving (P.Eq, P.Ord, P.IsString, R.ToText,  P.Show)
 
 -- Wrap: AppId
 newtype AppId = AppId R.Text
   deriving (P.Eq, P.Ord, P.IsString, R.ToText,  P.Show)
-
--- Struct: Hello
-data Hello = Hello
-  { helloTarget :: R.Text
-  } deriving (P.Show, P.Eq)
-
--- Struct: AddComment
-data AddComment = AddComment
-  { addCommentMessage :: R.Text
-  } deriving (P.Show, P.Eq)
-
--- Struct: User
-data User = User
-  { userName :: R.Text
-  , userGithub :: (P.Maybe Url)
-  } deriving (P.Show, P.Eq)
 
 -- Struct: Date
 data Date = Date
@@ -121,14 +108,21 @@ data Date = Date
   , dateDay :: P.Int
   } deriving (P.Show, P.Eq)
 
+-- Struct: User
+data User = User
+  { userId :: UserId
+  , userName :: R.Text
+  , userGithub :: (P.Maybe Url)
+  } deriving (P.Show, P.Eq)
+
 -- Struct: AppSpec
 data AppSpec = AppSpec
   { appSpecName :: R.Text
   , appSpecSubtitle :: R.Text
   , appSpecDevice :: Device
   , appSpecInfo :: R.Text
-  , appSpecAuthors :: [Author]
-  , appSpecPorters :: [Author]
+  , appSpecAuthors :: [AuthorSpec]
+  , appSpecPorters :: [AuthorSpec]
   , appSpecPage :: (P.Maybe Url)
   , appSpecImg :: Url
   , appSpecLink :: Url
@@ -149,6 +143,16 @@ data App = App
   , appLink :: Url
   } deriving (P.Show, P.Eq)
 
+-- Struct: Hello
+data Hello = Hello
+  { helloTarget :: R.Text
+  } deriving (P.Show, P.Eq)
+
+-- Struct: AddComment
+data AddComment = AddComment
+  { addCommentMessage :: R.Text
+  } deriving (P.Show, P.Eq)
+
 -- Struct: AddApp
 data AddApp = AddApp
   { addAppSpec :: AppSpec
@@ -165,6 +169,20 @@ data Device
   = Device'Gcw0 
   deriving (P.Show, P.Eq)
 
+-- Enumeration: AuthorSpec
+data AuthorSpec
+  = AuthorSpec'Name AuthorSpec'Name'Members
+  | AuthorSpec'User AuthorSpec'User'Members
+  deriving (P.Show, P.Eq)
+
+data AuthorSpec'Name'Members = AuthorSpec'Name'Members
+  { authorSpec'NameName :: R.Text
+  } deriving (P.Show, P.Eq)
+
+data AuthorSpec'User'Members = AuthorSpec'User'Members
+  { authorSpec'UserUser :: UserId
+  } deriving (P.Show, P.Eq)
+
 -- Enumeration: Author
 data Author
   = Author'Name Author'Name'Members
@@ -176,8 +194,7 @@ data Author'Name'Members = Author'Name'Members
   } deriving (P.Show, P.Eq)
 
 data Author'User'Members = Author'User'Members
-  { author'UserIdent :: UserId
-  , author'UserUser :: User
+  { author'UserUser :: User
   } deriving (P.Show, P.Eq)
 
 --------------------------------------------------------
@@ -259,22 +276,6 @@ data Api'Api
 -- Type Instances
 --------------------------------------------------------
 
-instance C.ToVal UserId where
-  toVal (UserId _w) = C.toVal _w
-
-instance C.FromVal UserId where
-  fromVal _v = UserId P.<$> C.fromVal _v
-
-instance R.ToJSON UserId where
-  toJSON = R.toJSON P.. C.toVal
-
-instance R.FromJSON UserId where
-  parseJSON _v = do
-    _x <- R.parseJSON _v
-    case C.fromVal _x of
-      P.Nothing -> P.mzero
-      P.Just _y -> P.return _y
-
 instance C.ToVal Url where
   toVal (Url _w) = C.toVal _w
 
@@ -291,6 +292,22 @@ instance R.FromJSON Url where
       P.Nothing -> P.mzero
       P.Just _y -> P.return _y
 
+instance C.ToVal UserId where
+  toVal (UserId _w) = C.toVal _w
+
+instance C.FromVal UserId where
+  fromVal _v = UserId P.<$> C.fromVal _v
+
+instance R.ToJSON UserId where
+  toJSON = R.toJSON P.. C.toVal
+
+instance R.FromJSON UserId where
+  parseJSON _v = do
+    _x <- R.parseJSON _v
+    case C.fromVal _x of
+      P.Nothing -> P.mzero
+      P.Just _y -> P.return _y
+
 instance C.ToVal AppId where
   toVal (AppId _w) = C.toVal _w
 
@@ -301,78 +318,6 @@ instance R.ToJSON AppId where
   toJSON = R.toJSON P.. C.toVal
 
 instance R.FromJSON AppId where
-  parseJSON _v = do
-    _x <- R.parseJSON _v
-    case C.fromVal _x of
-      P.Nothing -> P.mzero
-      P.Just _y -> P.return _y
-
-instance C.ToVal Hello where
-  toVal Hello
-    { helloTarget
-    } = C.Val'ApiVal P.$ C.ApiVal'Struct P.$ C.Struct P.$ R.fromList
-    [ ("target", C.toVal helloTarget)
-    ]
-
-instance C.FromVal Hello where
-  fromVal = \case
-    C.Val'ApiVal (C.ApiVal'Struct (C.Struct _m)) -> Hello
-      P.<$> C.getMember _m "target"
-    _ -> P.Nothing
-
-instance R.ToJSON Hello where
-  toJSON = R.toJSON P.. C.toVal
-
-instance R.FromJSON Hello where
-  parseJSON _v = do
-    _x <- R.parseJSON _v
-    case C.fromVal _x of
-      P.Nothing -> P.mzero
-      P.Just _y -> P.return _y
-
-instance C.ToVal AddComment where
-  toVal AddComment
-    { addCommentMessage
-    } = C.Val'ApiVal P.$ C.ApiVal'Struct P.$ C.Struct P.$ R.fromList
-    [ ("message", C.toVal addCommentMessage)
-    ]
-
-instance C.FromVal AddComment where
-  fromVal = \case
-    C.Val'ApiVal (C.ApiVal'Struct (C.Struct _m)) -> AddComment
-      P.<$> C.getMember _m "message"
-    _ -> P.Nothing
-
-instance R.ToJSON AddComment where
-  toJSON = R.toJSON P.. C.toVal
-
-instance R.FromJSON AddComment where
-  parseJSON _v = do
-    _x <- R.parseJSON _v
-    case C.fromVal _x of
-      P.Nothing -> P.mzero
-      P.Just _y -> P.return _y
-
-instance C.ToVal User where
-  toVal User
-    { userName
-    , userGithub
-    } = C.Val'ApiVal P.$ C.ApiVal'Struct P.$ C.Struct P.$ R.fromList
-    [ ("name", C.toVal userName)
-    , ("github", C.toVal userGithub)
-    ]
-
-instance C.FromVal User where
-  fromVal = \case
-    C.Val'ApiVal (C.ApiVal'Struct (C.Struct _m)) -> User
-      P.<$> C.getMember _m "name"
-      P.<*> C.getMember _m "github"
-    _ -> P.Nothing
-
-instance R.ToJSON User where
-  toJSON = R.toJSON P.. C.toVal
-
-instance R.FromJSON User where
   parseJSON _v = do
     _x <- R.parseJSON _v
     case C.fromVal _x of
@@ -402,6 +347,35 @@ instance R.ToJSON Date where
   toJSON = R.toJSON P.. C.toVal
 
 instance R.FromJSON Date where
+  parseJSON _v = do
+    _x <- R.parseJSON _v
+    case C.fromVal _x of
+      P.Nothing -> P.mzero
+      P.Just _y -> P.return _y
+
+instance C.ToVal User where
+  toVal User
+    { userId
+    , userName
+    , userGithub
+    } = C.Val'ApiVal P.$ C.ApiVal'Struct P.$ C.Struct P.$ R.fromList
+    [ ("id", C.toVal userId)
+    , ("name", C.toVal userName)
+    , ("github", C.toVal userGithub)
+    ]
+
+instance C.FromVal User where
+  fromVal = \case
+    C.Val'ApiVal (C.ApiVal'Struct (C.Struct _m)) -> User
+      P.<$> C.getMember _m "id"
+      P.<*> C.getMember _m "name"
+      P.<*> C.getMember _m "github"
+    _ -> P.Nothing
+
+instance R.ToJSON User where
+  toJSON = R.toJSON P.. C.toVal
+
+instance R.FromJSON User where
   parseJSON _v = do
     _x <- R.parseJSON _v
     case C.fromVal _x of
@@ -508,6 +482,52 @@ instance R.FromJSON App where
       P.Nothing -> P.mzero
       P.Just _y -> P.return _y
 
+instance C.ToVal Hello where
+  toVal Hello
+    { helloTarget
+    } = C.Val'ApiVal P.$ C.ApiVal'Struct P.$ C.Struct P.$ R.fromList
+    [ ("target", C.toVal helloTarget)
+    ]
+
+instance C.FromVal Hello where
+  fromVal = \case
+    C.Val'ApiVal (C.ApiVal'Struct (C.Struct _m)) -> Hello
+      P.<$> C.getMember _m "target"
+    _ -> P.Nothing
+
+instance R.ToJSON Hello where
+  toJSON = R.toJSON P.. C.toVal
+
+instance R.FromJSON Hello where
+  parseJSON _v = do
+    _x <- R.parseJSON _v
+    case C.fromVal _x of
+      P.Nothing -> P.mzero
+      P.Just _y -> P.return _y
+
+instance C.ToVal AddComment where
+  toVal AddComment
+    { addCommentMessage
+    } = C.Val'ApiVal P.$ C.ApiVal'Struct P.$ C.Struct P.$ R.fromList
+    [ ("message", C.toVal addCommentMessage)
+    ]
+
+instance C.FromVal AddComment where
+  fromVal = \case
+    C.Val'ApiVal (C.ApiVal'Struct (C.Struct _m)) -> AddComment
+      P.<$> C.getMember _m "message"
+    _ -> P.Nothing
+
+instance R.ToJSON AddComment where
+  toJSON = R.toJSON P.. C.toVal
+
+instance R.FromJSON AddComment where
+  parseJSON _v = do
+    _x <- R.parseJSON _v
+    case C.fromVal _x of
+      P.Nothing -> P.mzero
+      P.Just _y -> P.return _y
+
 instance C.ToVal AddApp where
   toVal AddApp
     { addAppSpec
@@ -578,6 +598,41 @@ instance R.FromJSON Device where
       P.Nothing -> P.mzero
       P.Just _y -> P.return _y
 
+instance C.ToVal AuthorSpec where
+  toVal = \case
+    AuthorSpec'Name AuthorSpec'Name'Members
+      { authorSpec'NameName
+      } -> C.Val'ApiVal P.$ C.ApiVal'Enumeral P.$ C.Enumeral "Name" P.$ P.Just P.$ R.fromList
+      [ ("name", C.toVal authorSpec'NameName)
+      ]
+    AuthorSpec'User AuthorSpec'User'Members
+      { authorSpec'UserUser
+      } -> C.Val'ApiVal P.$ C.ApiVal'Enumeral P.$ C.Enumeral "User" P.$ P.Just P.$ R.fromList
+      [ ("user", C.toVal authorSpec'UserUser)
+      ]
+
+instance C.FromVal AuthorSpec where
+  fromVal = \case
+    C.Val'ApiVal (C.ApiVal'Enumeral (C.Enumeral _tag _m)) -> case (_tag,_m) of
+      ("Name", P.Just _m') -> AuthorSpec'Name P.<$> (AuthorSpec'Name'Members
+          P.<$> C.getMember _m' "name"
+        )
+      ("User", P.Just _m') -> AuthorSpec'User P.<$> (AuthorSpec'User'Members
+          P.<$> C.getMember _m' "user"
+        )
+      _ -> P.Nothing
+    _ -> P.Nothing
+
+instance R.ToJSON AuthorSpec where
+  toJSON = R.toJSON P.. C.toVal
+
+instance R.FromJSON AuthorSpec where
+  parseJSON _v = do
+    _x <- R.parseJSON _v
+    case C.fromVal _x of
+      P.Nothing -> P.mzero
+      P.Just _y -> P.return _y
+
 instance C.ToVal Author where
   toVal = \case
     Author'Name Author'Name'Members
@@ -586,11 +641,9 @@ instance C.ToVal Author where
       [ ("name", C.toVal author'NameName)
       ]
     Author'User Author'User'Members
-      { author'UserIdent
-      , author'UserUser
+      { author'UserUser
       } -> C.Val'ApiVal P.$ C.ApiVal'Enumeral P.$ C.Enumeral "User" P.$ P.Just P.$ R.fromList
-      [ ("ident", C.toVal author'UserIdent)
-      , ("user", C.toVal author'UserUser)
+      [ ("user", C.toVal author'UserUser)
       ]
 
 instance C.FromVal Author where
@@ -600,8 +653,7 @@ instance C.FromVal Author where
           P.<$> C.getMember _m' "name"
         )
       ("User", P.Just _m') -> Author'User P.<$> (Author'User'Members
-          P.<$> C.getMember _m' "ident"
-          P.<*> C.getMember _m' "user"
+          P.<$> C.getMember _m' "user"
         )
       _ -> P.Nothing
     _ -> P.Nothing
@@ -618,5 +670,5 @@ instance R.FromJSON Author where
 
 api'spec :: R.Value
 api'spec = v
-  where P.Just v = R.decode "{\"fluid\":{\"major\":0,\"minor\":0},\"pull\":{\"protocol\":\"http\",\"name\":\"Api\",\"host\":\"127.0.0.1\",\"meta\":\"Unit\",\"path\":\"/api\",\"port\":8080,\"error\":\"Unit\"},\"schema\":{\"Hello\":{\"m\":[{\"target\":\"String\"}],\"o\":\"String\"},\"AddComment\":{\"m\":[{\"message\":\"String\"}],\"o\":\"Unit\"},\"Device\":[\"Gcw0\"],\"UserId\":\"String\",\"User\":{\"m\":[{\"name\":\"String\"},{\"github\":{\"n\":\"Option\",\"p\":\"Url\"}}]},\"Date\":{\"m\":[{\"year\":\"Int\"},{\"month\":\"Int\"},{\"day\":\"Int\"}]},\"Author\":[{\"tag\":\"Name\",\"m\":[{\"name\":\"String\"}]},{\"tag\":\"User\",\"m\":[{\"ident\":\"UserId\"},{\"user\":\"User\"}]}],\"Url\":\"String\",\"AppId\":\"String\",\"AppSpec\":{\"m\":[{\"name\":\"String\"},{\"subtitle\":\"String\"},{\"device\":\"Device\"},{\"info\":\"String\"},{\"authors\":{\"n\":\"List\",\"p\":\"Author\"}},{\"porters\":{\"n\":\"List\",\"p\":\"Author\"}},{\"page\":{\"n\":\"Option\",\"p\":\"Url\"}},{\"img\":\"Url\"},{\"link\":\"Url\"}]},\"App\":{\"m\":[{\"id\":\"AppId\"},{\"name\":\"String\"},{\"subtitle\":\"String\"},{\"device\":\"Device\"},{\"info\":\"String\"},{\"authors\":{\"n\":\"List\",\"p\":\"Author\"}},{\"porters\":{\"n\":\"List\",\"p\":\"Author\"}},{\"page\":{\"n\":\"Option\",\"p\":\"Url\"}},{\"released\":\"Date\"},{\"img\":\"Url\"},{\"link\":\"Url\"}]},\"AddApp\":{\"m\":[{\"spec\":\"AppSpec\"}],\"o\":\"AppId\"},\"GetApps\":{\"m\":[{\"start\":\"Int\"},{\"size\":\"Int\"}],\"o\":{\"n\":\"List\",\"p\":\"App\"}}},\"version\":{\"major\":0,\"minor\":0}}"
+  where P.Just v = R.decode "{\"fluid\":{\"major\":0,\"minor\":0},\"pull\":{\"protocol\":\"http\",\"name\":\"Api\",\"host\":\"127.0.0.1\",\"meta\":\"Unit\",\"path\":\"/api\",\"port\":8080,\"error\":\"Unit\"},\"schema\":{\"Url\":\"String\",\"UserId\":\"String\",\"AppId\":\"String\",\"Device\":[\"Gcw0\"],\"AuthorSpec\":[{\"tag\":\"Name\",\"m\":[{\"name\":\"String\"}]},{\"tag\":\"User\",\"m\":[{\"user\":\"UserId\"}]}],\"Author\":[{\"tag\":\"Name\",\"m\":[{\"name\":\"String\"}]},{\"tag\":\"User\",\"m\":[{\"user\":\"User\"}]}],\"Date\":{\"m\":[{\"year\":\"Int\"},{\"month\":\"Int\"},{\"day\":\"Int\"}]},\"User\":{\"m\":[{\"id\":\"UserId\"},{\"name\":\"String\"},{\"github\":{\"n\":\"Option\",\"p\":\"Url\"}}]},\"AppSpec\":{\"m\":[{\"name\":\"String\"},{\"subtitle\":\"String\"},{\"device\":\"Device\"},{\"info\":\"String\"},{\"authors\":{\"n\":\"List\",\"p\":\"AuthorSpec\"}},{\"porters\":{\"n\":\"List\",\"p\":\"AuthorSpec\"}},{\"page\":{\"n\":\"Option\",\"p\":\"Url\"}},{\"img\":\"Url\"},{\"link\":\"Url\"}]},\"App\":{\"m\":[{\"id\":\"AppId\"},{\"name\":\"String\"},{\"subtitle\":\"String\"},{\"device\":\"Device\"},{\"info\":\"String\"},{\"authors\":{\"n\":\"List\",\"p\":\"Author\"}},{\"porters\":{\"n\":\"List\",\"p\":\"Author\"}},{\"page\":{\"n\":\"Option\",\"p\":\"Url\"}},{\"released\":\"Date\"},{\"img\":\"Url\"},{\"link\":\"Url\"}]},\"Hello\":{\"m\":[{\"target\":\"String\"}],\"o\":\"String\"},\"AddComment\":{\"m\":[{\"message\":\"String\"}],\"o\":\"Unit\"},\"AddApp\":{\"m\":[{\"spec\":\"AppSpec\"}],\"o\":\"AppId\"},\"GetApps\":{\"m\":[{\"start\":\"Int\"},{\"size\":\"Int\"}],\"o\":{\"n\":\"List\",\"p\":\"App\"}}},\"version\":{\"major\":0,\"minor\":0}}"
 

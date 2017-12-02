@@ -55,8 +55,8 @@ addApp () AddApp{addAppSpec=spec} = do
     , DB.aSubtitle = appSpecSubtitle spec
     , DB.aInfo = appSpecInfo spec
     , DB.aDevice = toText (appSpecDevice spec)
-    , DB.aAuthors = (\(Author'Name (Author'Name'Members name)) -> name) <$> appSpecAuthors spec
-    , DB.aPorters = (\(Author'Name (Author'Name'Members name)) -> name) <$> appSpecPorters spec
+    , DB.aAuthors = (\(AuthorSpec'Name (AuthorSpec'Name'Members name)) -> name) <$> appSpecAuthors spec
+    , DB.aPorters = (\(AuthorSpec'Name (AuthorSpec'Name'Members name)) -> name) <$> appSpecPorters spec
     , DB.aPage = toText <$> appSpecPage spec
     , DB.aCreated = now
     , DB.aReleased = now
@@ -73,7 +73,7 @@ deviceText "Gcw0" = Device'Gcw0
 
 getApps :: () -> GetApps -> Handler [App]
 getApps () GetApps{getAppsStart=start, getAppsSize=size} = do
-  apps <-  runDB $ selectList [] [Desc DB.AReleased, OffsetBy start, LimitTo size]
+  apps <-  runDB $ selectList [] [Asc DB.AName, OffsetBy start, LimitTo size]
   return $ flip map (map entityVal apps) $ \app -> App
     { appId = AppId $ DB.aIdent app
     , appName = DB.aName app
