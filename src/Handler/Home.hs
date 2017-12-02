@@ -12,6 +12,7 @@ import qualified AppCavern.Api.V0 as V0
 
 getHomeR :: Handler Html
 getHomeR = do
+  apps <- fmap (fmap entityVal) $ runDB $ selectList [] []
   defaultLayout $ do
     let jsFormId = "js-commentForm" :: Text
     let jsFormTextareaId = "js-createCommentTextarea" :: Text

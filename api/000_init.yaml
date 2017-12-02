@@ -13,7 +13,6 @@ pull:
 
 schema:
 
-  # Simple endpoint
   Hello:
     m: [target: String]
     o: String
@@ -21,3 +20,30 @@ schema:
   AddComment:
     m: [message: String]
     o: Unit
+
+  Device: [Gcw0]
+
+  UserId: String
+  User:
+    m: [name: String, github: {n: Option, p: Url}]
+
+  Date:
+    m: [year: Int, month: Int, day: Int]
+
+  Author: [{tag: Name, m: [name: String]}, {tag: User, m: [ident: UserId, user: User]}]
+
+  Url: String
+
+  AppId: String
+  AppSpec:
+    m: [name: String, subtitle: String, device: Device, info: String, authors: {n: List, p: Author}, porters: {n: List, p: Author}, page: {n: Option, p: Url}, img: Url, link: Url]
+  App:
+    m: [id: AppId, name: String, subtitle: String, device: Device, info: String, authors: {n: List, p: Author}, porters: {n: List, p: Author}, page: {n: Option, p: Url}, released: Date, img: Url, link: Url]
+
+  AddApp:
+    m: [spec: AppSpec]
+    o: AppId
+
+  GetApps:
+    m: [start: Int, size: Int]
+    o: {n: List, p: App}

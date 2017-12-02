@@ -6,7 +6,7 @@ User
     password Text Maybe
     UniqueUser ident
     deriving Typeable
-    
+
 Email
     email Text
     userId UserId Maybe
@@ -18,3 +18,19 @@ Comment json -- Adding "json" causes ToJSON and FromJSON instances to be derived
     userId UserId Maybe
     deriving Eq
     deriving Show
+
+A
+  ident Text
+  created UTCTime
+  name Text
+  device Text
+  subtitle Text
+  released UTCTime
+  info Text
+  authors [Text]
+  porters [Text]
+  page Text Maybe
+  img Text
+  link Text
+  UniqueA ident
+  deriving Show

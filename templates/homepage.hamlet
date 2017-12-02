@@ -15,3 +15,17 @@
           <h1 #start>GCW Zero
           <p>
             <a href="http://www.gcw-zero.com">gcw-zero.com</a>
+
+          <br>
+            <ul>
+              $forall app <- apps
+                <li>
+                  <div style="margin-bottom: 20px">
+                    <div .pull-left style="margin-right: 10px">
+                      <img src="#{aImg app}" height="100px" width="100px"/>
+                    <div>
+                      #{aName app}
+                    <div>
+                      #{aSubtitle app}
+                    <div>
+                      <a href="#{aLink app}">Download</a>

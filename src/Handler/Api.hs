@@ -17,6 +17,8 @@ import Fluid.Endpoint
 import qualified AppCavern.Api as Api
 import qualified AppCavern.Api.V0 as V0
 
+import AppCavern.App
+
 getApiR :: Handler Value
 getApiR = return Api.api'spec
 
@@ -36,3 +38,6 @@ instance V0.Api'Service () Handler where
     return msg
 
   api'AddComment () V0.AddComment{V0.addCommentMessage=msg} = runDB $ insert_ $ Comment msg Nothing
+
+  api'AddApp = addApp
+  api'GetApps = getApps

@@ -48,6 +48,10 @@ dependencies:
 - wai
 - fluid-idl
 - yesod-auth-oauth2
+- protolude
+- time
+- text-conversions
+- random
 
 # The library contains all of our application code. The executable
 # defined below is just a thin wrapper.
