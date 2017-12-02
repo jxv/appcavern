@@ -1,1 +1,1 @@
-web: /app/.local/bin/appcavern
+web: /app/.local/bin/apptavern

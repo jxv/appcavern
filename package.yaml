@@ -1,4 +1,4 @@
-name:    appcavern
+name:    apptavern
 version: "0.0.0"
 
 dependencies:
@@ -73,7 +73,7 @@ library:
 
 # Runnable executable for our application
 executables:
-  appcavern:
+  apptavern:
     main: main.hs
     source-dirs: app
     ghc-options:
@@ -81,7 +81,7 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - appcavern
+    - apptavern
     when:
     - condition: flag(library-only)
       buildable: false
@@ -93,7 +93,7 @@ tests:
     source-dirs: test
     ghc-options: -Wall
     dependencies:
-    - appcavern
+    - apptavern
     - hspec >=2.0.0
     - yesod-test
 

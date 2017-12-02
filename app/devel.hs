@@ -1,5 +1,5 @@
 {-# LANGUAGE PackageImports #-}
-import "appcavern" Application (develMain)
+import "apptavern" Application (develMain)
 import Prelude (IO)
 
 main :: IO ()

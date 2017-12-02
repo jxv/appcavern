@@ -14,10 +14,10 @@ import Import
 import Fluid.Server
 import Fluid.Endpoint
 
-import qualified AppCavern.Api as Api
-import qualified AppCavern.Api.V0 as V0
+import qualified AppTavern.Api as Api
+import qualified AppTavern.Api.V0 as V0
 
-import AppCavern.App
+import AppTavern.App
 
 getApiR :: Handler Value
 getApiR = return Api.api'spec

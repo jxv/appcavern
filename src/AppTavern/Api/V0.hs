@@ -13,7 +13,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
 -- Module
-module AppCavern.Api.V0
+module AppTavern.Api.V0
   ( api'version
   , api'pull
   , api'handler

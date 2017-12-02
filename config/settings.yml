@@ -24,13 +24,13 @@ ip-from-header: "_env:IP_FROM_HEADER:false"
 # See https://github.com/yesodweb/yesod/wiki/Configuration#parsing-numeric-values-as-strings
 
 database:
-  user:     "_env:PGUSER:appcavern"
-  password: "_env:PGPASS:appcavern"
+  user:     "_env:PGUSER:apptavern"
+  password: "_env:PGPASS:apptavern"
   host:     "_env:PGHOST:localhost"
   port:     "_env:PGPORT:5432"
   # See config/test-settings.yml for an override during tests
-  database: "_env:PGDATABASE:appcavern"
+  database: "_env:PGDATABASE:apptavern"
   poolsize: "_env:PGPOOLSIZE:10"
 
-copyright: App Cavern Copyright 2017
+copyright: App Tavern Copyright 2017
 #analytics: UA-YOURCODE

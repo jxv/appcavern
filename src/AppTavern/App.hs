@@ -7,7 +7,7 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
 
-module AppCavern.App
+module AppTavern.App
   ( addApp
   , getApps
   ) where
@@ -22,7 +22,7 @@ import qualified Data.List as List
 
 import qualified Model as DB
 
-import AppCavern.Api.V0
+import AppTavern.Api.V0
 
 -- toUTCTime :: Date -> UTCTime
 -- toUTCTime Date{dateYear,dateMonth,dateDay} = UTCTime (fromGregorian (fromIntegral dateYear) dateMonth dateDay) 0

@@ -2,7 +2,7 @@
 {-# OPTIONS_GHC -fno-warn-unused-imports #-}
 
 -- Module
-module AppCavern.Api
+module AppTavern.Api
   ( api'handlerMap
   , api'spec
   , V0.Api'Service(..)
@@ -32,7 +32,7 @@ import qualified Prelude as P
 import qualified Fluid.Server as C (RuntimeThrower, Hooks, Request, Response, Major, Minor, Pull)
 import qualified Fluid.Imports as R
 
-import qualified AppCavern.Api.V0 as V0
+import qualified AppTavern.Api.V0 as V0
   ( Api'Service(..)
   , Api'Thrower(..)
   , api'handler

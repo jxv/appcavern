@@ -12,4 +12,4 @@ for i in api/*.yaml; do
     yaml2json < $i > "api_readonly/$j.json"
 done
 
-fluid -l haskell -s ./api_readonly -m AppCavern.Api -n Api -d ./src/AppCavern -e server
+fluid -l haskell -s ./api_readonly -m AppTavern.Api -n Api -d ./src/AppTavern -e server

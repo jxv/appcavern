@@ -8,7 +8,7 @@ module Handler.Home where
 import Import
 import Text.Julius (RawJS (..))
 
-import qualified AppCavern.Api.V0 as V0
+import qualified AppTavern.Api.V0 as V0
 
 getHomeR :: Handler Html
 getHomeR = do
@@ -17,5 +17,5 @@ getHomeR = do
     let jsFormId = "js-commentForm" :: Text
     let jsFormTextareaId = "js-createCommentTextarea" :: Text
     aDomId <- newIdent
-    setTitle "App Cavern"
+    setTitle "App Tavern"
     $(widgetFile "homepage")
