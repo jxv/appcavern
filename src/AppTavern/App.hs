@@ -10,10 +10,11 @@
 module AppTavern.App
   ( addApp
   , getApps
+  , countApps
   ) where
 
 import Protolude
-import Import (Handler, runDB, insert_, selectList, Entity(..), SelectOpt(..))
+import Import (Handler, runDB, insert_, selectList, count, Entity(..), Filter, SelectOpt(..))
 import Data.Time.Clock
 import Data.Time.Calendar
 import Data.Text.Conversions
@@ -87,3 +88,6 @@ getApps () GetApps{getAppsStart=start, getAppsSize=size} = do
     , appLink = Url $ DB.aLink app
     , appReleased = toDate (DB.aReleased app)
     }
+
+countApps :: () -> Handler Int
+countApps () = runDB $ count ([] :: [Filter DB.A])

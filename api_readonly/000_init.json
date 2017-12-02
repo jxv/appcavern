@@ -207,6 +207,9 @@
         "n": "List",
         "p": "App"
       }
+    },
+    "CountApps": {
+      "o": "Int"
     }
   }
 }

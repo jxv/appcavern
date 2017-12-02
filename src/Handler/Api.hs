@@ -41,3 +41,4 @@ instance V0.Api'Service () Handler where
 
   api'AddApp = addApp
   api'GetApps = getApps
+  api'CountApps = countApps

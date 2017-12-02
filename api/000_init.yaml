@@ -61,3 +61,5 @@ schema:
   GetApps:
     m: [start: Int, size: Int]
     o: {n: List, p: App}
+  CountApps:
+    o: Int
