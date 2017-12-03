@@ -21,41 +21,21 @@ import Yesod.Default.Util (WidgetFileSettings, widgetFileNoReload, widgetFileRel
 -- loaded from various sources: defaults, environment variables, config files,
 -- theoretically even a database.
 data AppSettings = AppSettings
-    { appStaticDir              :: String
-    -- ^ Directory from which to serve static files.
-    , appDatabaseConf           :: PostgresConf
-    -- ^ Configuration settings for accessing the database.
-    , appRoot                   :: Maybe Text
-    -- ^ Base for all generated URLs. If @Nothing@, determined
-    -- from the request headers.
-    , appHost                   :: HostPreference
-    -- ^ Host/interface the server should bind to.
-    , appPort                   :: Int
-    -- ^ Port to listen on
-    , appIpFromHeader           :: Bool
-    -- ^ Get the IP address from the header when logging. Useful when sitting
-    -- behind a reverse proxy.
-
-    , appDetailedRequestLogging :: Bool
-    -- ^ Use detailed request logging system
-    , appShouldLogAll           :: Bool
-    -- ^ Should all log messages be displayed?
-    , appReloadTemplates        :: Bool
-    -- ^ Use the reload version of templates
-    , appMutableStatic          :: Bool
-    -- ^ Assume that files in the static dir may change after compilation
-    , appSkipCombining          :: Bool
-    -- ^ Perform no stylesheet/script combining
-
-    -- Example app-specific configuration values.
-    , appCopyright              :: Text
-    -- ^ Copyright text to appear in the footer of the page
-    , appAnalytics              :: Maybe Text
-    -- ^ Google Analytics code
-
-    , appAuthDummyLogin         :: Bool
-    -- ^ Indicate if auth dummy login should be enabled.
-    }
+  { appStaticDir :: String
+  , appDatabaseConf :: PostgresConf
+  , appRoot :: Maybe Text
+  , appHost :: HostPreference
+  , appPort :: Int
+  , appIpFromHeader :: Bool
+  , appDetailedRequestLogging :: Bool
+  , appShouldLogAll :: Bool
+  , appReloadTemplates :: Bool
+  , appMutableStatic :: Bool
+  , appSkipCombining :: Bool
+  , appCopyright :: Text
+  , appAnalytics :: Maybe Text
+  , appAuthDummyLogin :: Bool
+  }
 
 instance FromJSON AppSettings where
     parseJSON = withObject "AppSettings" $ \o -> do

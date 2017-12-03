@@ -33,51 +33,27 @@ import AppTavern.Handler.Home
 import AppTavern.Handler.Api
 import AppTavern.DB (migrate)
 
--- This line actually creates our YesodDispatch instance. It is the second half
--- of the call to mkYesodData which occurs in Foundation.hs. Please see the
--- comments there for more details.
 mkYesodDispatch "App" resourcesApp
 
--- | This function allocates resources (such as a database connection pool),
--- performs initialization and returns a foundation datatype value. This is also
--- the place to put your migrate statements to have automatic database
--- migrations handled by Yesod.
 makeFoundation :: AppSettings -> IO App
 makeFoundation appSettings = do
-  -- Some basic initializations: HTTP connection manager, logger, and static
-  -- subsite.
   appHttpManager <- newManager
   appLogger <- newStdoutLoggerSet defaultBufSize >>= makeYesodLogger
   appStatic <-
     (if appMutableStatic appSettings then staticDevel else static)
     (appStaticDir appSettings)
-
-  -- We need a log function to create a connection pool. We need a connection
-  -- pool to create our foundation. And we need our foundation to get a
-  -- logging function. To get out of this loop, we initially create a
-  -- temporary foundation without a real connection pool, get a log function
-  -- from there, and then create the real foundation.
-  let mkFoundation appConnPool = App {..}
+  let mkFoundation appConnPool = App {..} -- chiken and the egg problem
   let tempFoundation = mkFoundation $ error "connPool forced in tempFoundation"
   let logFunc = messageLoggerSource tempFoundation appLogger
-
-  -- Create the database connection pool
   pool <- flip runLoggingT logFunc $ createPostgresqlPool
     (pgConnStr  $ appDatabaseConf appSettings)
     (pgPoolSize $ appDatabaseConf appSettings)
-
-  -- Perform database migration using our application's logging settings.
   migrate (pgConnStr $ appDatabaseConf appSettings)
-
-  -- Return the foundation
   return $ mkFoundation pool
 
--- | Convert our foundation to a WAI Application by calling @toWaiAppPlain@ and
--- applying some additional middlewares.
 makeApplication :: App -> IO Application
 makeApplication foundation = do
   logWare <- makeLogWare foundation
-  -- Create the WAI application and apply middlewares
   appPlain <- toWaiAppPlain foundation
   return $ logWare $ defaultMiddlewaresNoLogging appPlain
 
@@ -94,8 +70,6 @@ makeLogWare foundation =
       , destination = Logger $ loggerSet $ appLogger foundation
       }
 
-
--- | Warp settings for the given foundation value.
 warpSettings :: App -> Settings
 warpSettings foundation =
     setPort (appPort $ appSettings foundation)
@@ -110,7 +84,6 @@ warpSettings foundation =
         (toLogStr $ "Exception from Warp: " ++ show e))
     defaultSettings
 
--- | For yesod devel, return the Warp settings and WAI Application.
 getApplicationDev :: IO (Settings, Application)
 getApplicationDev = do
   settings <- getAppSettings
@@ -122,34 +95,18 @@ getApplicationDev = do
 getAppSettings :: IO AppSettings
 getAppSettings = loadYamlSettings [configSettingsYml] [] useEnv
 
--- | main function for use by yesod devel
 develMain :: IO ()
 develMain = develMainHelper getApplicationDev
 
--- | The @main@ function for an executable running this site.
 appMain :: IO ()
 appMain = do
-  -- Get the settings from all relevant sources
-  settings <- loadYamlSettingsArgs
-    -- fall back to compile-time values, set to [] to require values at runtime
-    [configSettingsYmlValue]
-
-    -- allow environment variables to override
-    useEnv
-
-  -- Generate the foundation from the settings
+  settings <- loadYamlSettingsArgs [configSettingsYmlValue] useEnv
   foundation <- makeFoundation settings
-
-  -- Generate a WAI Application from the foundation
   app <- makeApplication foundation
-
-  -- Run the application with Warp
   runSettings (warpSettings foundation) app
 
 
---------------------------------------------------------------
--- Functions for DevelMain.hs (a way to run the app from GHCi)
---------------------------------------------------------------
+-- For DevelMain.hs as a way to run the app from GHCi
 getApplicationRepl :: IO (Int, App, Application)
 getApplicationRepl = do
   settings <- getAppSettings
@@ -161,15 +118,10 @@ getApplicationRepl = do
 shutdownApp :: App -> IO ()
 shutdownApp _ = return ()
 
-
----------------------------------------------
--- Functions for use in development with GHCi
----------------------------------------------
-
--- | Run a handler
+-- For GHCi
 handler :: Handler a -> IO a
 handler h = getAppSettings >>= makeFoundation >>= flip unsafeHandler h
 
--- | Run DB queries
+-- For GHCi
 db :: ReaderT SqlBackend (HandlerT App IO) a -> IO a
 db = handler . runDB
