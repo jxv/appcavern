@@ -2,9 +2,9 @@
 -- Syntax for this file here: https://github.com/yesodweb/persistent/blob/master/docs/Persistent-entity-syntax.md
 
 User
-    ident Text
+    public Text
     password Text Maybe
-    UniqueUser ident
+    UniqueUser public
     deriving Typeable
 
 Email
@@ -14,17 +14,27 @@ Email
     UniqueEmail email
 
 App
-  ident Text
+  public Text
   created UTCTime
   name Text
   device Device
   subtitle Text
   released UTCTime
   info Text
-  authors [Text]
-  porters [Text]
   page Text Maybe
   img Text
   link Text
-  UniqueA ident
+  UniqueA public
+  deriving Show
+
+AppXAuthor
+  appPublic Text
+  authorName Text Maybe
+  userPublic Text Maybe
+  deriving Show
+
+AppXPorter
+  appPublic Text
+  porterName Text Maybe
+  userPublic Text Maybe
   deriving Show

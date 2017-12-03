@@ -50,20 +50,29 @@ addApp :: () -> AddApp -> Handler AppId
 addApp () AddApp{addAppSpec=spec} = do
   appId <- liftIO genAppId
   now <- liftIO getCurrentTime
-  runDB $ insert_ $ DB.App
-    { DB.appIdent = toText appId
-    , DB.appName = appSpecName spec
-    , DB.appSubtitle = appSpecSubtitle spec
-    , DB.appInfo = appSpecInfo spec
-    , DB.appDevice = dbDevice (appSpecDevice spec)
-    , DB.appAuthors = (\(AuthorSpec'Name (AuthorSpec'Name'Members name)) -> name) <$> appSpecAuthors spec
-    , DB.appPorters = (\(AuthorSpec'Name (AuthorSpec'Name'Members name)) -> name) <$> appSpecPorters spec
-    , DB.appPage = toText <$> appSpecPage spec
-    , DB.appCreated = now
-    , DB.appReleased = now
-    , DB.appImg = toText $ appSpecImg spec
-    , DB.appLink = toText $ appSpecLink spec
-    }
+  runDB $ do
+    insert_ $ DB.App
+      { DB.appPublic = toText appId
+      , DB.appName = appSpecName spec
+      , DB.appSubtitle = appSpecSubtitle spec
+      , DB.appInfo = appSpecInfo spec
+      , DB.appDevice = dbDevice (appSpecDevice spec)
+      , DB.appPage = toText <$> appSpecPage spec
+      , DB.appCreated = now
+      , DB.appReleased = now
+      , DB.appImg = toText $ appSpecImg spec
+      , DB.appLink = toText $ appSpecLink spec
+      }
+  -- insert authors and porters
+    forM_ (appSpecAuthors spec) $ \author -> insert_ $ DB.AppXAuthor
+        { DB.appXAuthorAppPublic = toText appId
+        , DB.appXAuthorAuthorName = case author of AuthorSpec'Name (AuthorSpec'Name'Members name) -> Just name; _ -> Nothing
+        , DB.appXAuthorUserPublic = case author of AuthorSpec'User (AuthorSpec'User'Members userId) -> Just (toText userId); _ -> Nothing
+        }
+    forM_ (appSpecPorters spec) $ \author -> insert_ $ DB.AppXPorter
+        (toText appId)
+        (case author of AuthorSpec'Name (AuthorSpec'Name'Members name) -> Just name; _ -> Nothing)
+        (case author of AuthorSpec'User (AuthorSpec'User'Members userId) -> Just (toText userId); _ -> Nothing)
   return appId
 
 dbDevice :: Device -> DB.Device
@@ -76,13 +85,13 @@ getApps :: () -> GetApps -> Handler [App]
 getApps () GetApps{getAppsStart=start, getAppsSize=size} = do
   apps <-  runDB $ selectList [] [Asc DB.AppName, OffsetBy start, LimitTo size]
   return $ flip map (map entityVal apps) $ \app -> App
-    { appId = AppId $ DB.appIdent app
+    { appId = AppId $ DB.appPublic app
     , appName = DB.appName app
     , appSubtitle = DB.appSubtitle app
     , appDevice = apiDevice $ DB.appDevice app
     , appInfo = DB.appInfo app
-    , appAuthors = map (Author'Name . Author'Name'Members) (DB.appAuthors app)
-    , appPorters = map (Author'Name . Author'Name'Members) (DB.appPorters app)
+    , appAuthors = [] -- map (Author'Name . Author'Name'Members) (DB.appAuthors app)
+    , appPorters = [] -- map (Author'Name . Author'Name'Members) (DB.appPorters app)
     , appPage = fmap Url $ DB.appPage app
     , appImg = Url $ DB.appImg app
     , appLink = Url $ DB.appLink app

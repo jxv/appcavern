@@ -1,13 +1,13 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
-module AppTavern.Handler.Home where
+module AppTavern.Endpoint.Root where
 
 import Text.Julius (RawJS (..))
 import Data.Text.Conversions
 
 import AppTavern.Import
-import AppTavern.Handler.Api ()
+import AppTavern.Endpoint.Api ()
 
 import qualified AppTavern.Api as Api
 import qualified AppTavern.Api.V0 as V0

@@ -16,9 +16,9 @@ import Genesis.Persist (runMigrations)
 import AppTavern.DB.NonGenerated
 
 share [mkPersist sqlSettings]
-  $(persistFileWith lowerCaseSettings "db/models")
+  $(persistFileWith lowerCaseSettings "database/models")
 
 
 migrate :: ConnectionString -> IO ()
 migrate connStr = runStderrLoggingT $ withPostgresqlConn connStr $
-  runSqlPersistT $(runMigrations "db")
+  runSqlPersistT $(runMigrations "database")

@@ -60,7 +60,7 @@ data MenuTypes
 -- This function also generates the following type synonyms:
 -- type Handler = HandlerT App IO
 -- type Widget = WidgetT App IO ()
-mkYesodData "App" $(parseRoutesFile "config/routes")
+mkYesodData "App" $(parseRoutesFile "routes")
 
 -- | A convenient synonym for creating forms.
 type Form x = Html -> MForm (HandlerT App IO) (FormResult x, Widget)
@@ -83,7 +83,7 @@ instance Yesod App where
   -- default session idle timeout is 120 minutes
   makeSessionBackend _ = Just <$> defaultClientSessionBackend
     120    -- timeout in minutes
-    "config/client_session_key.aes"
+    "client_session_key.aes"
 
   -- Yesod Middleware allows you to run code before and after each handler function.
   -- The defaultYesodMiddleware adds the response header "Vary: Accept, Accept-Language" and performs authorization checks.
@@ -198,7 +198,7 @@ instance YesodAuth App where
     case x of
       Just (Entity uid _) -> return $ Authenticated uid
       Nothing -> Authenticated <$> insert User
-        { userIdent = credsIdent creds
+        { userPublic = credsIdent creds
         , userPassword = Nothing
         }
 

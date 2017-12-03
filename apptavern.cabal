@@ -19,7 +19,7 @@ flag library-only
 
 library
   hs-source-dirs:
-      src
+      library
   default-extensions: FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NamedFieldPuns OverloadedStrings RankNTypes ScopedTypeVariables TupleSections
   build-depends:
       base >=4.8.2.0 && <4.9 || >=4.9.1.0 && <5
@@ -80,10 +80,10 @@ library
       AppTavern.DB
       AppTavern.DB.Generated
       AppTavern.DB.NonGenerated
+      AppTavern.Endpoint.Api
+      AppTavern.Endpoint.Resources
+      AppTavern.Endpoint.Root
       AppTavern.Foundation
-      AppTavern.Handler.Api
-      AppTavern.Handler.Common
-      AppTavern.Handler.Home
       AppTavern.Import
       AppTavern.Import.NoFoundation
       AppTavern.Main
@@ -94,7 +94,7 @@ library
 executable apptavern
   main-is: main.hs
   hs-source-dirs:
-      app
+      executable
   default-extensions: FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NamedFieldPuns OverloadedStrings RankNTypes ScopedTypeVariables TupleSections
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:

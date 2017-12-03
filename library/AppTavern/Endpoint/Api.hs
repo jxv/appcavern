@@ -3,7 +3,7 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module AppTavern.Handler.Api where
+module AppTavern.Endpoint.Api where
 
 import Fluid.Server
 import Fluid.Endpoint

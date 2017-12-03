@@ -28,9 +28,9 @@ import Network.Wai.Middleware.RequestLogger (Destination (Logger), IPAddrSource 
 import System.Log.FastLogger (defaultBufSize, newStdoutLoggerSet, toLogStr)
 
 import AppTavern.Import
-import AppTavern.Handler.Common
-import AppTavern.Handler.Home
-import AppTavern.Handler.Api
+import AppTavern.Endpoint.Api
+import AppTavern.Endpoint.Resources
+import AppTavern.Endpoint.Root
 import AppTavern.DB (migrate)
 
 mkYesodDispatch "App" resourcesApp

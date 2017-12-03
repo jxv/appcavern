@@ -71,7 +71,7 @@ dependencies:
 # The library contains all of our application code. The executable
 # defined below is just a thin wrapper.
 library:
-  source-dirs: src
+  source-dirs: library
   when:
   - condition: (flag(dev)) || (flag(library-only))
     then:
@@ -90,7 +90,7 @@ library:
 executables:
   apptavern:
     main: main.hs
-    source-dirs: app
+    source-dirs: executable
     ghc-options:
     - -threaded
     - -rtsopts
