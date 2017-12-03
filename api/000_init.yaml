@@ -52,9 +52,6 @@ schema:
   Hello:
     m: [target: String]
     o: String
-  AddComment:
-    m: [message: String]
-    o: Unit
   AddApp:
     m: [spec: AppSpec]
     o: AppId

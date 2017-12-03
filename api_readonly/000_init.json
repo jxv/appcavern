@@ -178,14 +178,6 @@
       ],
       "o": "String"
     },
-    "AddComment": {
-      "m": [
-        {
-          "message": "String"
-        }
-      ],
-      "o": "Unit"
-    },
     "AddApp": {
       "m": [
         {

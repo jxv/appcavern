@@ -22,10 +22,10 @@
                 <li>
                   <div style="margin-bottom: 20px">
                     <div .pull-left style="margin-right: 10px">
-                      <img src="#{aImg app}" height="100px" width="100px"/>
+                      <img src="#{toText $ Api.appImg app}" height="100px" width="133px"/>
                     <div>
-                      #{aName app}
+                      #{Api.appName app}
                     <div>
-                      #{aSubtitle app}
+                      #{Api.appSubtitle app}
                     <div>
-                      <a href="#{aLink app}">Download</a>
+                      <a href="#{toText $ Api.appLink app}">Download</a>

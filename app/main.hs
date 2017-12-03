@@ -1,5 +1,5 @@
-import Prelude     (IO)
-import Application (appMain)
+import Prelude (IO)
+import AppTavern.Main (appMain)
 
 main :: IO ()
 main = appMain

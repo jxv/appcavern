@@ -28,7 +28,6 @@ module AppTavern.Api.V0
   , AppSpec(..)
   , App(..)
   , Hello(..)
-  , AddComment(..)
   , AddApp(..)
   , GetApps(..)
   , Device(..)
@@ -76,14 +75,12 @@ class C.ServiceThrower m => Api'Thrower m where
 class P.Monad m => Api'Service meta m where
   api'CountApps :: meta -> m P.Int
   api'Hello :: meta -> Hello -> m R.Text
-  api'AddComment :: meta -> AddComment -> m ()
   api'AddApp :: meta -> AddApp -> m AppId
   api'GetApps :: meta -> GetApps -> m [App]
 
 instance Api'Service meta m => Api'Service meta (M.ExceptT C.Response m) where
   api'CountApps _meta = M.lift  P.$ api'CountApps _meta
   api'Hello _meta = M.lift  P.. api'Hello _meta
-  api'AddComment _meta = M.lift  P.. api'AddComment _meta
   api'AddApp _meta = M.lift  P.. api'AddApp _meta
   api'GetApps _meta = M.lift  P.. api'GetApps _meta
 
@@ -148,11 +145,6 @@ data App = App
 -- Struct: Hello
 data Hello = Hello
   { helloTarget :: R.Text
-  } deriving (P.Show, P.Eq)
-
--- Struct: AddComment
-data AddComment = AddComment
-  { addCommentMessage :: R.Text
   } deriving (P.Show, P.Eq)
 
 -- Struct: AddApp
@@ -247,7 +239,6 @@ api'ApiCall meta' apiCall' = case C.parseApiCall api'ApiParser apiCall' of
   P.Just x' -> case x' of
     Api'Api'CountApps -> C.toVal P.<$> api'CountApps meta'
     Api'Api'Hello a' -> C.toVal P.<$> api'Hello meta' a'
-    Api'Api'AddComment a' -> C.toVal P.<$> api'AddComment meta' a'
     Api'Api'AddApp a' -> C.toVal P.<$> api'AddApp meta' a'
     Api'Api'GetApps a' -> C.toVal P.<$> api'GetApps meta' a'
 
@@ -259,7 +250,6 @@ api'ApiParser = C.ApiParser
      ]
   , struct = R.fromList
      [ ("Hello", v Api'Api'Hello)
-     , ("AddComment", v Api'Api'AddComment)
      , ("AddApp", v Api'Api'AddApp)
      , ("GetApps", v Api'Api'GetApps)
      ]
@@ -273,7 +263,6 @@ api'ApiParser = C.ApiParser
 data Api'Api
   = Api'Api'CountApps
   | Api'Api'Hello Hello
-  | Api'Api'AddComment AddComment
   | Api'Api'AddApp AddApp
   | Api'Api'GetApps GetApps
   deriving (P.Show, P.Eq)
@@ -511,29 +500,6 @@ instance R.FromJSON Hello where
       P.Nothing -> P.mzero
       P.Just _y -> P.return _y
 
-instance C.ToVal AddComment where
-  toVal AddComment
-    { addCommentMessage
-    } = C.Val'ApiVal P.$ C.ApiVal'Struct P.$ C.Struct P.$ R.fromList
-    [ ("message", C.toVal addCommentMessage)
-    ]
-
-instance C.FromVal AddComment where
-  fromVal = \case
-    C.Val'ApiVal (C.ApiVal'Struct (C.Struct _m)) -> AddComment
-      P.<$> C.getMember _m "message"
-    _ -> P.Nothing
-
-instance R.ToJSON AddComment where
-  toJSON = R.toJSON P.. C.toVal
-
-instance R.FromJSON AddComment where
-  parseJSON _v = do
-    _x <- R.parseJSON _v
-    case C.fromVal _x of
-      P.Nothing -> P.mzero
-      P.Just _y -> P.return _y
-
 instance C.ToVal AddApp where
   toVal AddApp
     { addAppSpec
@@ -676,5 +642,5 @@ instance R.FromJSON Author where
 
 api'spec :: R.Value
 api'spec = v
-  where P.Just v = R.decode "{\"fluid\":{\"major\":0,\"minor\":0},\"pull\":{\"protocol\":\"http\",\"name\":\"Api\",\"host\":\"127.0.0.1\",\"meta\":\"Unit\",\"path\":\"/api\",\"port\":8080,\"error\":\"Unit\"},\"schema\":{\"Url\":\"String\",\"UserId\":\"String\",\"AppId\":\"String\",\"Device\":[\"Gcw0\"],\"AuthorSpec\":[{\"tag\":\"Name\",\"m\":[{\"name\":\"String\"}]},{\"tag\":\"User\",\"m\":[{\"user\":\"UserId\"}]}],\"Author\":[{\"tag\":\"Name\",\"m\":[{\"name\":\"String\"}]},{\"tag\":\"User\",\"m\":[{\"user\":\"User\"}]}],\"Date\":{\"m\":[{\"year\":\"Int\"},{\"month\":\"Int\"},{\"day\":\"Int\"}]},\"User\":{\"m\":[{\"id\":\"UserId\"},{\"name\":\"String\"},{\"github\":{\"n\":\"Option\",\"p\":\"Url\"}}]},\"AppSpec\":{\"m\":[{\"name\":\"String\"},{\"subtitle\":\"String\"},{\"device\":\"Device\"},{\"info\":\"String\"},{\"authors\":{\"n\":\"List\",\"p\":\"AuthorSpec\"}},{\"porters\":{\"n\":\"List\",\"p\":\"AuthorSpec\"}},{\"page\":{\"n\":\"Option\",\"p\":\"Url\"}},{\"img\":\"Url\"},{\"link\":\"Url\"}]},\"App\":{\"m\":[{\"id\":\"AppId\"},{\"name\":\"String\"},{\"subtitle\":\"String\"},{\"device\":\"Device\"},{\"info\":\"String\"},{\"authors\":{\"n\":\"List\",\"p\":\"Author\"}},{\"porters\":{\"n\":\"List\",\"p\":\"Author\"}},{\"page\":{\"n\":\"Option\",\"p\":\"Url\"}},{\"released\":\"Date\"},{\"img\":\"Url\"},{\"link\":\"Url\"}]},\"Hello\":{\"m\":[{\"target\":\"String\"}],\"o\":\"String\"},\"AddComment\":{\"m\":[{\"message\":\"String\"}],\"o\":\"Unit\"},\"AddApp\":{\"m\":[{\"spec\":\"AppSpec\"}],\"o\":\"AppId\"},\"GetApps\":{\"m\":[{\"start\":\"Int\"},{\"size\":\"Int\"}],\"o\":{\"n\":\"List\",\"p\":\"App\"}},\"CountApps\":{\"o\":\"Int\"}},\"version\":{\"major\":0,\"minor\":0}}"
+  where P.Just v = R.decode "{\"fluid\":{\"major\":0,\"minor\":0},\"pull\":{\"protocol\":\"http\",\"name\":\"Api\",\"host\":\"127.0.0.1\",\"meta\":\"Unit\",\"path\":\"/api\",\"port\":8080,\"error\":\"Unit\"},\"schema\":{\"Url\":\"String\",\"UserId\":\"String\",\"AppId\":\"String\",\"Device\":[\"Gcw0\"],\"AuthorSpec\":[{\"tag\":\"Name\",\"m\":[{\"name\":\"String\"}]},{\"tag\":\"User\",\"m\":[{\"user\":\"UserId\"}]}],\"Author\":[{\"tag\":\"Name\",\"m\":[{\"name\":\"String\"}]},{\"tag\":\"User\",\"m\":[{\"user\":\"User\"}]}],\"Date\":{\"m\":[{\"year\":\"Int\"},{\"month\":\"Int\"},{\"day\":\"Int\"}]},\"User\":{\"m\":[{\"id\":\"UserId\"},{\"name\":\"String\"},{\"github\":{\"n\":\"Option\",\"p\":\"Url\"}}]},\"AppSpec\":{\"m\":[{\"name\":\"String\"},{\"subtitle\":\"String\"},{\"device\":\"Device\"},{\"info\":\"String\"},{\"authors\":{\"n\":\"List\",\"p\":\"AuthorSpec\"}},{\"porters\":{\"n\":\"List\",\"p\":\"AuthorSpec\"}},{\"page\":{\"n\":\"Option\",\"p\":\"Url\"}},{\"img\":\"Url\"},{\"link\":\"Url\"}]},\"App\":{\"m\":[{\"id\":\"AppId\"},{\"name\":\"String\"},{\"subtitle\":\"String\"},{\"device\":\"Device\"},{\"info\":\"String\"},{\"authors\":{\"n\":\"List\",\"p\":\"Author\"}},{\"porters\":{\"n\":\"List\",\"p\":\"Author\"}},{\"page\":{\"n\":\"Option\",\"p\":\"Url\"}},{\"released\":\"Date\"},{\"img\":\"Url\"},{\"link\":\"Url\"}]},\"Hello\":{\"m\":[{\"target\":\"String\"}],\"o\":\"String\"},\"AddApp\":{\"m\":[{\"spec\":\"AppSpec\"}],\"o\":\"AppId\"},\"GetApps\":{\"m\":[{\"start\":\"Int\"},{\"size\":\"Int\"}],\"o\":{\"n\":\"List\",\"p\":\"App\"}},\"CountApps\":{\"o\":\"Int\"}},\"version\":{\"major\":0,\"minor\":0}}"
 

@@ -31,7 +31,7 @@
 module DevelMain where
 
 import Prelude
-import Application (getApplicationRepl, shutdownApp)
+import AppTavern.Main (getApplicationRepl, shutdownApp)
 
 import Control.Exception (finally)
 import Control.Monad ((>=>))

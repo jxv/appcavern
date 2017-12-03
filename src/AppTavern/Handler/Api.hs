@@ -1,22 +1,16 @@
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE DeriveFunctor #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TypeSynonymInstances #-}
-{-# LANGUAGE FlexibleInstances #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Handler.Api where
+module AppTavern.Handler.Api where
 
-import Import
 import Fluid.Server
 import Fluid.Endpoint
 
 import qualified AppTavern.Api as Api
 import qualified AppTavern.Api.V0 as V0
-
+import AppTavern.Import
 import AppTavern.App
 
 getApiR :: Handler Value
@@ -36,9 +30,6 @@ instance V0.Api'Service () Handler where
     let msg = "Hello, " `mappend` (V0.helloTarget h)
     liftIO $ putStrLn msg
     return msg
-
-  api'AddComment () V0.AddComment{V0.addCommentMessage=msg} = runDB $ insert_ $ Comment msg Nothing
-
   api'AddApp = addApp
   api'GetApps = getApps
   api'CountApps = countApps

@@ -7,9 +7,8 @@
 {-# LANGUAGE ExplicitForAll #-}
 {-# LANGUAGE RankNTypes #-}
 
-module Foundation where
+module AppTavern.Foundation where
 
-import Import.NoFoundation
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Text.Hamlet          (hamletFile)
 import Text.Jasmine         (minifym)
@@ -17,12 +16,15 @@ import Text.Jasmine         (minifym)
 -- Used only when in "auth-dummy-login" setting is enabled.
 import Yesod.Auth.Dummy
 
-import Yesod.Auth.OpenId    (authOpenId, IdentifierType (Claimed))
-import Yesod.Default.Util   (addStaticContentExternal)
-import Yesod.Core.Types     (Logger)
+import Yesod.Auth.OpenId (authOpenId, IdentifierType (Claimed))
+import Yesod.Default.Util (addStaticContentExternal)
+import Yesod.Core.Types (Logger)
 import qualified Yesod.Core.Unsafe as Unsafe
 import qualified Data.CaseInsensitive as CI
 import qualified Data.Text.Encoding as TE
+
+import AppTavern.Import.NoFoundation
+import AppTavern.DB (UserId, User(..), Unique(..))
 
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -96,7 +98,7 @@ instance Yesod App where
     master <- getYesod
     mmsg <- getMessage
 
-    muser <- maybeAuthPair
+    _muser <- maybeAuthPair
     mcurrentRoute <- getCurrentRoute
 
     -- Get the breadcrumbs, as defined in the YesodBreadcrumbs instance.

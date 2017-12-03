@@ -13,17 +13,11 @@ Email
     verkey Text Maybe
     UniqueEmail email
 
-Comment json -- Adding "json" causes ToJSON and FromJSON instances to be derived.
-    message Text
-    userId UserId Maybe
-    deriving Eq
-    deriving Show
-
-A
+App
   ident Text
   created UTCTime
   name Text
-  device Text
+  device Device
   subtitle Text
   released UTCTime
   info Text

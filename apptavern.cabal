@@ -20,6 +20,7 @@ flag library-only
 library
   hs-source-dirs:
       src
+  default-extensions: FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NamedFieldPuns OverloadedStrings RankNTypes ScopedTypeVariables TupleSections
   build-depends:
       base >=4.8.2.0 && <4.9 || >=4.9.1.0 && <5
     , classy-prelude-yesod >=0.10.2 && <1.0 || >=1.1
@@ -65,31 +66,36 @@ library
     , time
     , text-conversions
     , random
+    , monad-persist
+    , genesis
   if (flag(dev)) || (flag(library-only))
     ghc-options: -Wall -fwarn-tabs -O0
     cpp-options: -DDEVELOPMENT
   else
     ghc-options: -Wall -fwarn-tabs -O2
   exposed-modules:
-      Application
       AppTavern.Api
       AppTavern.Api.V0
       AppTavern.App
-      Foundation
-      Handler.Api
-      Handler.Common
-      Handler.Home
-      Import
-      Import.NoFoundation
-      Model
-      Settings
-      Settings.StaticFiles
+      AppTavern.DB
+      AppTavern.DB.Generated
+      AppTavern.DB.NonGenerated
+      AppTavern.Foundation
+      AppTavern.Handler.Api
+      AppTavern.Handler.Common
+      AppTavern.Handler.Home
+      AppTavern.Import
+      AppTavern.Import.NoFoundation
+      AppTavern.Main
+      AppTavern.Settings
+      AppTavern.Settings.StaticFiles
   default-language: Haskell2010
 
 executable apptavern
   main-is: main.hs
   hs-source-dirs:
       app
+  default-extensions: FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NamedFieldPuns OverloadedStrings RankNTypes ScopedTypeVariables TupleSections
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.8.2.0 && <4.9 || >=4.9.1.0 && <5
@@ -136,6 +142,8 @@ executable apptavern
     , time
     , text-conversions
     , random
+    , monad-persist
+    , genesis
     , apptavern
   if flag(library-only)
     buildable: False
@@ -148,6 +156,7 @@ test-suite test
   main-is: Spec.hs
   hs-source-dirs:
       test
+  default-extensions: FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NamedFieldPuns OverloadedStrings RankNTypes ScopedTypeVariables TupleSections
   ghc-options: -Wall
   build-depends:
       base >=4.8.2.0 && <4.9 || >=4.9.1.0 && <5
@@ -194,6 +203,8 @@ test-suite test
     , time
     , text-conversions
     , random
+    , monad-persist
+    , genesis
     , apptavern
     , hspec >=2.0.0
     , yesod-test

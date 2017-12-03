@@ -1,6 +1,19 @@
 name:    apptavern
 version: "0.0.0"
 
+default-extensions:
+  - FlexibleContexts
+  - FlexibleInstances
+  - GADTs
+  - GeneralizedNewtypeDeriving
+  - LambdaCase
+  - MultiParamTypeClasses
+  - NamedFieldPuns
+  - OverloadedStrings
+  - RankNTypes
+  - ScopedTypeVariables
+  - TupleSections
+
 dependencies:
 
 # Due to a bug in GHC 8.0.1, we block its usage
@@ -52,6 +65,8 @@ dependencies:
 - time
 - text-conversions
 - random
+- monad-persist
+- genesis
 
 # The library contains all of our application code. The executable
 # defined below is just a thin wrapper.

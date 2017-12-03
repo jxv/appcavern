@@ -5,5 +5,8 @@ extra-deps:
 - fluid-idl-0.0.5
 - yesod-auth-oauth2-0.3.0
 - load-env-0.1.1
+- monad-persist-0.0.2.0
+- genesis-0.1.0.0
+- monad-io-adapter-0.1.0.0
 flags: {}
 extra-package-dbs: []

@@ -6,6 +6,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module AppTavern.App
   ( addApp
@@ -14,15 +15,14 @@ module AppTavern.App
   ) where
 
 import Protolude
-import Import (Handler, runDB, insert_, selectList, count, Entity(..), Filter, SelectOpt(..))
 import Data.Time.Clock
 import Data.Time.Calendar
 import Data.Text.Conversions
 import System.Random
 import qualified Data.List as List
 
-import qualified Model as DB
-
+import qualified AppTavern.DB as DB
+import AppTavern.Import (Handler, runDB, insert_, selectList, count, Entity(..), Filter, SelectOpt(..))
 import AppTavern.Api.V0
 
 -- toUTCTime :: Date -> UTCTime
@@ -50,44 +50,44 @@ addApp :: () -> AddApp -> Handler AppId
 addApp () AddApp{addAppSpec=spec} = do
   appId <- liftIO genAppId
   now <- liftIO getCurrentTime
-  runDB $ insert_ $ DB.A
-    { DB.aIdent = toText appId
-    , DB.aName = appSpecName spec
-    , DB.aSubtitle = appSpecSubtitle spec
-    , DB.aInfo = appSpecInfo spec
-    , DB.aDevice = toText (appSpecDevice spec)
-    , DB.aAuthors = (\(AuthorSpec'Name (AuthorSpec'Name'Members name)) -> name) <$> appSpecAuthors spec
-    , DB.aPorters = (\(AuthorSpec'Name (AuthorSpec'Name'Members name)) -> name) <$> appSpecPorters spec
-    , DB.aPage = toText <$> appSpecPage spec
-    , DB.aCreated = now
-    , DB.aReleased = now
-    , DB.aImg = toText $ appSpecImg spec
-    , DB.aLink = toText $ appSpecLink spec
+  runDB $ insert_ $ DB.App
+    { DB.appIdent = toText appId
+    , DB.appName = appSpecName spec
+    , DB.appSubtitle = appSpecSubtitle spec
+    , DB.appInfo = appSpecInfo spec
+    , DB.appDevice = dbDevice (appSpecDevice spec)
+    , DB.appAuthors = (\(AuthorSpec'Name (AuthorSpec'Name'Members name)) -> name) <$> appSpecAuthors spec
+    , DB.appPorters = (\(AuthorSpec'Name (AuthorSpec'Name'Members name)) -> name) <$> appSpecPorters spec
+    , DB.appPage = toText <$> appSpecPage spec
+    , DB.appCreated = now
+    , DB.appReleased = now
+    , DB.appImg = toText $ appSpecImg spec
+    , DB.appLink = toText $ appSpecLink spec
     }
   return appId
 
-instance ToText Device where
-  toText Device'Gcw0 = "Gcw0"
+dbDevice :: Device -> DB.Device
+dbDevice Device'Gcw0 = DB.Device'Gcw0
 
-deviceText :: Text -> Device
-deviceText "Gcw0" = Device'Gcw0
+apiDevice :: DB.Device -> Device
+apiDevice DB.Device'Gcw0 = Device'Gcw0
 
 getApps :: () -> GetApps -> Handler [App]
 getApps () GetApps{getAppsStart=start, getAppsSize=size} = do
-  apps <-  runDB $ selectList [] [Asc DB.AName, OffsetBy start, LimitTo size]
+  apps <-  runDB $ selectList [] [Asc DB.AppName, OffsetBy start, LimitTo size]
   return $ flip map (map entityVal apps) $ \app -> App
-    { appId = AppId $ DB.aIdent app
-    , appName = DB.aName app
-    , appSubtitle = DB.aSubtitle app
-    , appDevice = deviceText $ DB.aDevice app
-    , appInfo = DB.aInfo app
-    , appAuthors = map (Author'Name . Author'Name'Members) (DB.aAuthors app)
-    , appPorters = map (Author'Name . Author'Name'Members) (DB.aPorters app)
-    , appPage = fmap Url $ DB.aPage app
-    , appImg = Url $ DB.aImg app
-    , appLink = Url $ DB.aLink app
-    , appReleased = toDate (DB.aReleased app)
+    { appId = AppId $ DB.appIdent app
+    , appName = DB.appName app
+    , appSubtitle = DB.appSubtitle app
+    , appDevice = apiDevice $ DB.appDevice app
+    , appInfo = DB.appInfo app
+    , appAuthors = map (Author'Name . Author'Name'Members) (DB.appAuthors app)
+    , appPorters = map (Author'Name . Author'Name'Members) (DB.appPorters app)
+    , appPage = fmap Url $ DB.appPage app
+    , appImg = Url $ DB.appImg app
+    , appLink = Url $ DB.appLink app
+    , appReleased = toDate (DB.appReleased app)
     }
 
 countApps :: () -> Handler Int
-countApps () = runDB $ count ([] :: [Filter DB.A])
+countApps () = runDB $ count ([] :: [Filter DB.App])
