@@ -20,7 +20,7 @@
             <ul style="list-style: none">
               $forall app <- apps
                 <li>
-                  <div style="margin-bottom: 20px">
+                  <div .row style="margin-bottom: 20px; background-color: #eee; padding: 10px; border-radius: 5px">
                     <div .pull-left style="margin-right: 10px">
                       <img src="#{toText $ Api.appImg app}" height="150px" width="200px"/>
                     <div>
