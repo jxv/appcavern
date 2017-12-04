@@ -49,3 +49,4 @@ $else
         <p .text-muted>
             <hr>
             #{appCopyright $ appSettings master}
+            | <a href="https://github.com/jxv/apptavern">Source Code</a>

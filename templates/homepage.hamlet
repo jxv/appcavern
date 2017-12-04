@@ -17,15 +17,42 @@
             <a href="http://www.gcw-zero.com">gcw-zero.com</a>
 
           <br>
-            <ul>
+            <ul style="list-style: none">
               $forall app <- apps
                 <li>
                   <div style="margin-bottom: 20px">
                     <div .pull-left style="margin-right: 10px">
-                      <img src="#{toText $ Api.appImg app}" height="100px" width="133px"/>
+                      <img src="#{toText $ Api.appImg app}" height="150px" width="200px"/>
                     <div>
-                      #{Api.appName app}
-                    <div>
-                      #{Api.appSubtitle app}
+                      <span>
+                        #{Api.appName app}
+                      &nbsp;
+                      <span style="font-size: 0.6em; color: #777; font-style: italic">
+                        #{Api.appSubtitle app}
                     <div>
                       <a href="#{toText $ Api.appLink app}">Download</a>
+                    <div>
+                      <span style="font-size: 0.7em">
+                        By:&nbsp;
+                        <span style="color: #333">
+                          $forall author <- Api.appAuthors app
+                            $case author
+                              $of Api.Author'Name (Api.Author'Name'Members name)
+                                  <span style="background-color: #ddd; padding: 3px">
+                                    #{name}
+                                  &nbsp;&nbsp;&nbsp;
+                              $of Api.Author'User _
+                                  &nbsp;
+                    <div>
+                      $if not (null (Api.appPorters app))
+                        <span style="font-size: 0.7em">
+                          Ported by:&nbsp;
+                          <span style="color: #333">
+                            $forall author <- Api.appPorters app
+                              $case author
+                                $of Api.Author'Name (Api.Author'Name'Members name)
+                                    <span style="background-color: #ddd; padding: 3px">
+                                      #{name}
+                                    &nbsp;&nbsp;&nbsp;
+                                $of Api.Author'User _
+                                    &nbsp;
