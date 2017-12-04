@@ -16,10 +16,13 @@ import AppTavern.App
 getApiR :: Handler Value
 getApiR = return Api.api'spec
 
+unlimited :: Limits
+unlimited = Limits Nothing Nothing Nothing Nothing
+
 postApiR :: Handler Value
 postApiR = do
   v <- (requireJsonBody :: Handler Value)
-  let handlerMap = Api.api'handlerMap (\() -> defHooks) ()
+  let handlerMap = Api.api'handlerMap (\() -> defHooks {sandboxLimits = \_ -> return unlimited}) ()
   runFluid handlerMap v
 
 instance ServiceThrower Handler
