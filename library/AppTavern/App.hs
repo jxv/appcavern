@@ -19,10 +19,11 @@ import Data.Time.Clock
 import Data.Time.Calendar
 import Data.Text.Conversions
 import System.Random
+import Data.Maybe (catMaybes)
 import qualified Data.List as List
 
 import qualified AppTavern.DB as DB
-import AppTavern.Import (Handler, runDB, insert_, selectList, count, Entity(..), Filter, SelectOpt(..))
+import AppTavern.Import (Handler, runDB, insert_, selectList, count, Entity(..), Filter(..), SelectOpt(..), PersistFilter(..))
 import AppTavern.Api.V0
 
 -- toUTCTime :: Date -> UTCTime
@@ -83,20 +84,34 @@ apiDevice DB.Device'Gcw0 = Device'Gcw0
 
 getApps :: () -> GetApps -> Handler [App]
 getApps () GetApps{getAppsStart=start, getAppsSize=size} = do
-  apps <-  runDB $ selectList [] [Asc DB.AppName, OffsetBy start, LimitTo size]
-  return $ flip map (map entityVal apps) $ \app -> App
-    { appId = AppId $ DB.appPublic app
-    , appName = DB.appName app
-    , appSubtitle = DB.appSubtitle app
-    , appDevice = apiDevice $ DB.appDevice app
-    , appInfo = DB.appInfo app
-    , appAuthors = [] -- map (Author'Name . Author'Name'Members) (DB.appAuthors app)
-    , appPorters = [] -- map (Author'Name . Author'Name'Members) (DB.appPorters app)
-    , appPage = fmap Url $ DB.appPage app
-    , appImg = Url $ DB.appImg app
-    , appLink = Url $ DB.appLink app
-    , appReleased = toDate (DB.appReleased app)
-    }
+  apps <-  runDB $ selectList [Filter DB.AppDevice (Left DB.Device'Gcw0) Eq] [Asc DB.AppName, OffsetBy start, LimitTo size]
+  forM apps $ \Entity{entityVal=app} -> do
+    (authors, porters) <- runDB $ (,)
+      <$> (selectList [Filter DB.AppXAuthorAppPublic (Left $ DB.appPublic app) Eq] [])
+      <*> (selectList [Filter DB.AppXPorterAppPublic (Left $ DB.appPublic app) Eq] [])
+    let authors' = catMaybes $ map
+          (\Entity{entityVal=x} -> case DB.appXAuthorAuthorName x of
+            Nothing -> Nothing
+            Just name -> Just $ Author'Name (Author'Name'Members name))
+          authors
+    let porters' = catMaybes $ map
+          (\Entity{entityVal=x} -> case DB.appXPorterPorterName x of
+            Nothing -> Nothing
+            Just name -> Just $ Author'Name (Author'Name'Members name))
+          porters
+    return App
+      { appId = AppId $ DB.appPublic app
+      , appName = DB.appName app
+      , appSubtitle = DB.appSubtitle app
+      , appDevice = apiDevice $ DB.appDevice app
+      , appInfo = DB.appInfo app
+      , appAuthors = authors'
+      , appPorters = porters'
+      , appPage = fmap Url $ DB.appPage app
+      , appImg = Url $ DB.appImg app
+      , appLink = Url $ DB.appLink app
+      , appReleased = toDate (DB.appReleased app)
+      }
 
 countApps :: () -> Handler Int
 countApps () = runDB $ count ([] :: [Filter DB.App])

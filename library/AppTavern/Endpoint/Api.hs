@@ -23,7 +23,7 @@ postApiR = do
   runFluid handlerMap v
 
 instance ServiceThrower Handler
-instance Api.Api'Thrower Handler
+instance V0.Api'Thrower Handler
 
 instance V0.Api'Service () Handler where
   api'Hello () h = do
