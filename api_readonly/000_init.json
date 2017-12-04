@@ -6,10 +6,10 @@
   "pull": {
     "protocol": "http",
     "name": "Api",
-    "host": "127.0.0.1",
+    "host": "apptavern.herokuapp.acom.",
     "meta": "Unit",
     "path": "/api",
-    "port": 8080,
+    "port": 80,
     "error": "Unit"
   },
   "schema": {
