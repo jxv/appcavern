@@ -29,9 +29,11 @@
                       &nbsp;
                       <span style="font-size: 0.6em; color: #777; font-style: italic">
                         #{Api.appSubtitle app}
-                    <div>
-                      <a href="#{toText $ Api.appLink app}">Download</a>
-                    <div>
+                      <div style="margin-top: -15px">
+                        $maybe page <- Api.appPage app
+                          <span style="font-size: 0.7em">
+                            <a href="#{toText page}">#{toText page}</a>
+                      <div>
                       <span style="font-size: 0.7em">
                         By:&nbsp;
                         <span style="color: #333">
@@ -56,3 +58,5 @@
                                     &nbsp;&nbsp;&nbsp;
                                 $of Api.Author'User _
                                     &nbsp;
+                    <div>
+                        <a href="#{toText $ Api.appLink app}">Download</a>
