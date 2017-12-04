@@ -33,4 +33,4 @@ database:
   poolsize: "_env:PGPOOLSIZE:10"
 
 copyright: App Tavern Copyright 2017
-#analytics: UA-YOURCODE
+analytics: UA-110585857-1
