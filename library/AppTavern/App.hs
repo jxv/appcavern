@@ -25,6 +25,7 @@ import qualified Data.List as List
 import qualified AppTavern.DB as DB
 import AppTavern.Import (Handler, runDB, insert_, selectList, count, Entity(..), Filter(..), SelectOpt(..), PersistFilter(..))
 import AppTavern.Api.V0
+import AppTavern.Service ()
 
 -- toUTCTime :: Date -> UTCTime
 -- toUTCTime Date{dateYear,dateMonth,dateDay} = UTCTime (fromGregorian (fromIntegral dateYear) dateMonth dateDay) 0
@@ -49,6 +50,7 @@ genAppId = AppId <$> generateText64 16
 
 addApp :: () -> AddApp -> Handler AppId
 addApp () AddApp{addAppSpec=spec} = do
+  api'throw ()
   appId <- liftIO genAppId
   now <- liftIO getCurrentTime
   runDB $ do

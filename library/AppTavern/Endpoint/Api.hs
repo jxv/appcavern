@@ -16,15 +16,11 @@ import AppTavern.App
 getApiR :: Handler Value
 getApiR = return Api.api'spec
 
-
 postApiR :: Handler Value
 postApiR = do
   v <- (requireJsonBody :: Handler Value)
   let handlerMap = Api.api'handlerMap (\() -> defHooks) ()
   runFluid handlerMap v
-
-instance ServiceThrower Handler
-instance V0.Api'Thrower Handler
 
 instance V0.Api'Service () Handler where
   api'Hello () h = do

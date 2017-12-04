@@ -87,6 +87,7 @@ library
       AppTavern.Import
       AppTavern.Import.NoFoundation
       AppTavern.Main
+      AppTavern.Service
       AppTavern.Settings
       AppTavern.Settings.StaticFiles
   default-language: Haskell2010
