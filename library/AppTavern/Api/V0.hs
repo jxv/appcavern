@@ -1,6 +1,5 @@
 -- Pragmas
 {-# OPTIONS_GHC -fno-warn-unused-imports #-}
-{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -45,11 +44,8 @@ import qualified Control.Monad as P
 import qualified Control.Monad.Except as M
 import qualified Data.IORef as IO
 import qualified Data.String as P (IsString)
-
 import qualified Fluid.Imports as R
 import qualified Fluid.Server as C
-
-
 
 --------------------------------------------------------
 -- Configs
@@ -60,7 +56,7 @@ api'version :: C.Version
 api'version = C.Version 0 0
 
 api'pull :: C.Pull
-api'pull = C.Pull "http" "apptavern.herokuapp.acom." "/api" 80
+api'pull = C.Pull "http" "apptavern.herokuapp.com" "/api" 80
 
 --------------------------------------------------------
 -- Interfaces
@@ -79,10 +75,10 @@ class P.Monad m => Api'Service meta m where
   api'GetApps :: meta -> GetApps -> m [App]
 
 instance Api'Service meta m => Api'Service meta (M.ExceptT C.Response m) where
-  api'CountApps _meta = M.lift  P.$ api'CountApps _meta
-  api'Hello _meta = M.lift  P.. api'Hello _meta
-  api'AddApp _meta = M.lift  P.. api'AddApp _meta
-  api'GetApps _meta = M.lift  P.. api'GetApps _meta
+  api'CountApps _meta = M.lift P.$ api'CountApps _meta
+  api'Hello _meta = M.lift P.. api'Hello _meta
+  api'AddApp _meta = M.lift P.. api'AddApp _meta
+  api'GetApps _meta = M.lift P.. api'GetApps _meta
 
 --------------------------------------------------------
 -- Types
@@ -160,7 +156,7 @@ data GetApps = GetApps
 
 -- Enumeration: Device
 data Device
-  = Device'Gcw0 
+  = Device'Gcw0
   deriving (P.Show, P.Eq)
 
 -- Enumeration: AuthorSpec
@@ -206,7 +202,7 @@ api'handler
   -> xtra
   -> C.Request
   -> m (P.Either C.Response C.Response)
-api'handler _hooksBuilder xtra C.Request{meta,query} = R.catch
+api'handler _hooksBuilder xtra C.Request{C.meta=meta, C.query=query} = R.catch
   (M.runExceptT P.$ do
     meta' <- P.maybe (C.runtimeThrow C.RuntimeError'UnparsableMeta) P.return (C.fromValFromJson meta)
     let _hooks = _hooksBuilder xtra
@@ -245,16 +241,16 @@ api'ApiCall meta' apiCall' = case C.parseApiCall api'ApiParser apiCall' of
 -- API Parser
 api'ApiParser :: C.ApiParser Api'Api
 api'ApiParser = C.ApiParser
-  { hollow = R.fromList
+  { C.hollow = R.fromList
      [ ("CountApps", Api'Api'CountApps)
      ]
-  , struct = R.fromList
+  , C.struct = R.fromList
      [ ("Hello", v Api'Api'Hello)
      , ("AddApp", v Api'Api'AddApp)
      , ("GetApps", v Api'Api'GetApps)
      ]
-  , enumeration = R.empty
-  , wrap = R.empty
+  , C.enumeration = R.empty
+  , C.wrap = R.empty
   }
   where
     v x y = x P.<$> C.fromVal y
@@ -640,7 +636,10 @@ instance R.FromJSON Author where
       P.Nothing -> P.mzero
       P.Just _y -> P.return _y
 
+--------------------------------------------------------
+-- Spec
+--------------------------------------------------------
+
 api'spec :: R.Value
 api'spec = v
-  where P.Just v = R.decode "{\"fluid\":{\"major\":0,\"minor\":0},\"pull\":{\"protocol\":\"http\",\"name\":\"Api\",\"host\":\"apptavern.herokuapp.acom.\",\"meta\":\"Unit\",\"path\":\"/api\",\"port\":80,\"error\":\"Unit\"},\"schema\":{\"Url\":\"String\",\"UserId\":\"String\",\"AppId\":\"String\",\"Device\":[\"Gcw0\"],\"AuthorSpec\":[{\"tag\":\"Name\",\"m\":[{\"name\":\"String\"}]},{\"tag\":\"User\",\"m\":[{\"user\":\"UserId\"}]}],\"Author\":[{\"tag\":\"Name\",\"m\":[{\"name\":\"String\"}]},{\"tag\":\"User\",\"m\":[{\"user\":\"User\"}]}],\"Date\":{\"m\":[{\"year\":\"Int\"},{\"month\":\"Int\"},{\"day\":\"Int\"}]},\"User\":{\"m\":[{\"id\":\"UserId\"},{\"name\":\"String\"},{\"github\":{\"n\":\"Option\",\"p\":\"Url\"}}]},\"AppSpec\":{\"m\":[{\"name\":\"String\"},{\"subtitle\":\"String\"},{\"device\":\"Device\"},{\"info\":\"String\"},{\"authors\":{\"n\":\"List\",\"p\":\"AuthorSpec\"}},{\"porters\":{\"n\":\"List\",\"p\":\"AuthorSpec\"}},{\"page\":{\"n\":\"Option\",\"p\":\"Url\"}},{\"img\":\"Url\"},{\"link\":\"Url\"}]},\"App\":{\"m\":[{\"id\":\"AppId\"},{\"name\":\"String\"},{\"subtitle\":\"String\"},{\"device\":\"Device\"},{\"info\":\"String\"},{\"authors\":{\"n\":\"List\",\"p\":\"Author\"}},{\"porters\":{\"n\":\"List\",\"p\":\"Author\"}},{\"page\":{\"n\":\"Option\",\"p\":\"Url\"}},{\"released\":\"Date\"},{\"img\":\"Url\"},{\"link\":\"Url\"}]},\"Hello\":{\"m\":[{\"target\":\"String\"}],\"o\":\"String\"},\"AddApp\":{\"m\":[{\"spec\":\"AppSpec\"}],\"o\":\"AppId\"},\"GetApps\":{\"m\":[{\"start\":\"Int\"},{\"size\":\"Int\"}],\"o\":{\"n\":\"List\",\"p\":\"App\"}},\"CountApps\":{\"o\":\"Int\"}},\"version\":{\"major\":0,\"minor\":0}}"
-
+  where P.Just v = R.decode "{\"fluid\":{\"major\":0,\"minor\":0},\"pull\":{\"protocol\":\"http\",\"name\":\"Api\",\"host\":\"apptavern.herokuapp.com\",\"meta\":\"Unit\",\"path\":\"/api\",\"port\":80,\"error\":\"Unit\"},\"schema\":{\"Url\":\"String\",\"UserId\":\"String\",\"AppId\":\"String\",\"Device\":[\"Gcw0\"],\"AuthorSpec\":[{\"tag\":\"Name\",\"m\":[{\"name\":\"String\"}]},{\"tag\":\"User\",\"m\":[{\"user\":\"UserId\"}]}],\"Author\":[{\"tag\":\"Name\",\"m\":[{\"name\":\"String\"}]},{\"tag\":\"User\",\"m\":[{\"user\":\"User\"}]}],\"Date\":{\"m\":[{\"year\":\"Int\"},{\"month\":\"Int\"},{\"day\":\"Int\"}]},\"User\":{\"m\":[{\"id\":\"UserId\"},{\"name\":\"String\"},{\"github\":{\"n\":\"Option\",\"p\":\"Url\"}}]},\"AppSpec\":{\"m\":[{\"name\":\"String\"},{\"subtitle\":\"String\"},{\"device\":\"Device\"},{\"info\":\"String\"},{\"authors\":{\"n\":\"List\",\"p\":\"AuthorSpec\"}},{\"porters\":{\"n\":\"List\",\"p\":\"AuthorSpec\"}},{\"page\":{\"n\":\"Option\",\"p\":\"Url\"}},{\"img\":\"Url\"},{\"link\":\"Url\"}]},\"App\":{\"m\":[{\"id\":\"AppId\"},{\"name\":\"String\"},{\"subtitle\":\"String\"},{\"device\":\"Device\"},{\"info\":\"String\"},{\"authors\":{\"n\":\"List\",\"p\":\"Author\"}},{\"porters\":{\"n\":\"List\",\"p\":\"Author\"}},{\"page\":{\"n\":\"Option\",\"p\":\"Url\"}},{\"released\":\"Date\"},{\"img\":\"Url\"},{\"link\":\"Url\"}]},\"Hello\":{\"m\":[{\"target\":\"String\"}],\"o\":\"String\"},\"AddApp\":{\"m\":[{\"spec\":\"AppSpec\"}],\"o\":\"AppId\"},\"GetApps\":{\"m\":[{\"start\":\"Int\"},{\"size\":\"Int\"}],\"o\":{\"n\":\"List\",\"p\":\"App\"}},\"CountApps\":{\"o\":\"Int\"}},\"version\":{\"major\":0,\"minor\":0}}"

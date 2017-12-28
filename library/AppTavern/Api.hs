@@ -1,13 +1,20 @@
 -- Pragmas
 {-# OPTIONS_GHC -fno-warn-unused-imports #-}
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 
 -- Module
 module AppTavern.Api
   ( api'handlerMap
   , api'spec
-  , V0.Api'Service(..)
-  , V0.Api'Thrower(..)
-  , V0.api'pull
   , V0.Url(..)
   , V0.UserId(..)
   , V0.AppId(..)
@@ -25,12 +32,14 @@ module AppTavern.Api
   , V0.Author(..)
   , V0.Author'Name'Members(..)
   , V0.Author'User'Members(..)
+  , V0.Api'Service(..)
+  , V0.Api'Thrower(..)
+  , V0.api'pull
   ) where
 
 import qualified Prelude as P
 import qualified Fluid.Server as C (RuntimeThrower, Hooks, Request, Response, Major, Minor, Pull)
 import qualified Fluid.Imports as R
-
 import qualified AppTavern.Api.V0 as V0
   ( Api'Service(..)
   , Api'Thrower(..)
@@ -74,4 +83,3 @@ api'spec :: R.Value
 api'spec = R.toJSON
   [ V0.api'spec
   ]
-
